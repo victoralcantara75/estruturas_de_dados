@@ -113,21 +113,42 @@ int inserirColuna(matriz_esparsa *matriz, celula *no, int lin, int col, int elem
 }
 
 int remover(matriz_esparsa *matriz, int lin, int col){
+	lin = lin-1;
+	col = col-1;
+
 	celula *removida;
 	celula *aux = matriz->linha[lin];
+	celula *ant;
+	//printf("%d\n", aux->info);
 
-	while (aux->proxcol->coluna != col){
+	while (aux != NULL && aux->coluna != col){
+		ant = aux;
 		aux = aux->proxcol;
 	}
-	removida = aux->proxcol;
-	aux->proxcol = removida->proxcol;
+
+	if (aux == NULL) return 0;
+
+	if(aux == matriz->linha[lin]) 
+		matriz->linha[lin] = aux->proxcol;
+	else
+		ant->proxcol = aux->proxcol;
+
+	removida = aux;
 
 	celula *aux2 = matriz->coluna[col];
 
-	while (aux2->proxlin->linha != lin){
+	while (aux != NULL && aux2->linha != lin){
+		ant = aux2;
 		aux2 = aux2->proxlin;
 	}
-	aux2->proxlin = removida->proxlin;
+
+	if (aux == NULL) return 0;
+
+	if(aux == matriz->coluna[col]) 
+		matriz->coluna[col] = aux->proxcol;
+	else
+		ant->proxlin = aux->proxlin;
+
 	free(removida);
 	return 1;
 
@@ -190,23 +211,52 @@ void imprimir2(matriz_esparsa *matriz)			//IMPRIME TODA A MATRIZ, COMPLETANDO CO
 		}
 		printf("\n");
 	}
+	printf("\n");
 }
 
 int main(){
 	
 	matriz_esparsa matriz;
 	inicializar(&matriz);
+	int escolha, elemento, linha, coluna;
 
-	inserir(&matriz, 1, 4, 4);
-	inserir(&matriz, 1, 1, 1);
-	inserir(&matriz, 1, 2, 2);
-	inserir(&matriz, 1, 3, 3);
-	inserir(&matriz, 2, 3, 3);
-	inserir(&matriz, 2, 2, 4);
-	remover(&matriz, 4, 4);
+	do
+	{
+		printf("1 - Inserir elemento na matriz\n");
+		printf("2 - Remover elemento na matriz\n");
+		printf("3 - Imprimir matriz\n");
+		printf("4 - Sair\n");
 
-	//imprimir(&matriz);
-	imprimir2(&matriz);
+		scanf("%d", &escolha);
+
+		switch(escolha){
+			case 1:
+				printf("Digite o elemento para ser inserido: ");
+				scanf("%d", &elemento);
+				printf("Digite a linha: ");
+				scanf("%d", &linha);
+				printf("Digite a coluna: ");
+				scanf("%d", &coluna);
+				inserir(&matriz, elemento, linha, coluna);
+				break;
+
+			case 2:
+				printf("Digite a linha para remover: ");
+				scanf("%d", &linha);
+				printf("Digite a coluna para remover: ");
+				scanf("%d", &coluna);
+				remover(&matriz, linha, coluna);
+				break;
+
+			case 3: 
+				imprimir2(&matriz);
+				break;
+		}
+
+		printf("\e[H\e[2J");
+		imprimir2(&matriz);
+
+	} while (escolha != 4);
 
 	return 0;
 }
