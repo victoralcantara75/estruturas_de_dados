@@ -156,6 +156,9 @@ int remover(matriz_esparsa *matriz, int lin, int col){
 
 int inserir(matriz_esparsa *matriz, int elemento, int lin, int col){
 
+	if(lin > TAML || col > TAMC)
+		return 0;
+
 	lin = lin-1; 									//NA PROGRAMACAO OS INDICES COMECAM COM ZERO, MAS O USUARIO PARTE DO PRINCIPIO QUE A MATRIZ COMECA NO (1,1)
 	col = col-1;
 
