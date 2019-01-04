@@ -31,7 +31,7 @@ void inicializar(matriz_esparsa *matriz){
 int vazia(matriz_esparsa *matriz){
 
 	int i;
-	for (int i = 0; i < TAML; ++i)
+	for (i = 0; i < TAML; ++i)
 	{
 		if (matriz->linha[i] != NULL)
 			return 0;
@@ -199,10 +199,10 @@ void imprimir2(matriz_esparsa *matriz)			//IMPRIME TODA A MATRIZ, COMPLETANDO CO
 {
 	int i, j;
 	celula *aux;
-	for (int i = 0; i < TAML; ++i)
+	for ( i = 0; i < TAML; ++i)
 	{
 		aux = matriz->linha[i];
-		for (int j = 0; j < TAMC; ++j)
+		for ( j = 0; j < TAMC; ++j)
 		{
 			if (aux != NULL && aux->linha == i && aux->coluna == j)
 			{
