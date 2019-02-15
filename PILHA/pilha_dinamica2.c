@@ -1,3 +1,11 @@
+// ##########################################
+// #                                        #
+// #   IMPLEMENTADO POR VICTOR ALCANTARA    #
+// #  https://github.com/victoralcantara75  #
+// #              15/02/2019                #
+// #                                        #
+// ##########################################
+
 #include <stdio.h>
 #include <stdlib.h>
 
