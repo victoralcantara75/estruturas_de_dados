@@ -101,5 +101,11 @@ int main(){
 
 	} while (escolha != 3);
 
+    while(!vazia(&p))
+    {   
+        printf("Limpando memoria!\n");
+        pop(&p);
+    }
+
     return 0;
 }

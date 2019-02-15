@@ -39,6 +39,23 @@ int vazia(matriz_esparsa *matriz){
 	return 1;
 }
 
+int limpar(matriz_esparsa *matriz){
+
+	celula *aux;
+	int i;
+	for(i=0; i<TAML; i++)
+	{
+		while(matriz->linha[i]!=NULL)
+		{
+			aux = matriz->linha[i];
+			matriz->linha[i] = aux->proxcol;
+			free(aux);
+		}
+	}
+
+	return 1;
+}
+
 int inserirLinha(matriz_esparsa *matriz, celula *no, int lin, int col, int elemento){
 
 	celula **lista = &matriz->linha[lin];          //CRIO UMA VARIAVEL LISTA, PARA FICAR MAIS INTUITIVO COM A LISTA JA CONHECIDA
@@ -260,6 +277,8 @@ int main(){
 		imprimir2(&matriz);
 
 	} while (escolha != 4);
+
+	limpar(&matriz);
 
 	return 0;
 }

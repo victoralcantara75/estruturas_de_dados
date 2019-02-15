@@ -68,6 +68,5 @@ int main(){
     push(&p, 8);
 
     imprimir(&p);
-
     return 0;
 }
