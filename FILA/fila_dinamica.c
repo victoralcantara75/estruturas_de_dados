@@ -9,77 +9,118 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef struct spessoa{
+	int idade;
+	int altura;
+}pessoa;
+
 typedef struct sCell{
-	int info;
-	struct sCell *prox;
+	pessoa info;
+	struct sCell *next;
 }celula;
 
 typedef struct sFila{
-	celula *inicio;
-	celula *fim;
+	celula *inicio, *fim;
 }fila;
 
-celula *criarNo(){
-	return (celula*)malloc(sizeof(celula));
+void inicializar(fila *f){
+	f->inicio = NULL;
+	f->fim = NULL;
 }
 
-void inicializar(fila *fila){
-	fila->inicio = NULL;
-	fila->fim = NULL;
-}
-
-int vazia(fila *fila){
-	if(fila->inicio == NULL && fila->fim == NULL)
+int vazia(fila *f){
+	if (f->inicio == NULL && f->fim== NULL)
+	{
 		return 1;
+	}
 	return 0;
 }
 
-int enfileirar(fila *fila, int elemento){
-	
-	celula *no= criarNo();
-	if(no == NULL) return -1;
-	
-	no->info = elemento;
-	
-	if(vazia(fila)){
-		fila->inicio = no;
-		fila->fim = no;
+int enfileirar(fila *f, pessoa p1){
+
+	celula *no = (celula*)malloc(sizeof(celula));
+	if (no == NULL)
+	{
+		printf("ERRO NNA ALOCACAO\n");
+		return 0;
+	}
+
+	no->info = p1;
+	no->next = NULL;
+
+	if (vazia(f))
+	{
+		f->inicio = no;
+		f->fim = no;
 		return 1;
-	}
-	
-	fila->fim->prox = no;
-	no->prox = NULL;
+	}	
+
+	f->fim->next = no;
+	f->fim = no;
 	return 1;
+
 }
 
-int desenfileirar(fila *fila){
-	
-	if (vazia(fila)) return 0;
-	
-	celula *aux = fila->inicio;
-	fila->inicio = aux->prox;
-	
+pessoa desenfileirar(fila *f){
+
+	if (vazia(f))
+	{
+		exit(1) ;
+	}
+
+	celula *aux = f->inicio;
+	f->inicio = aux->next;
+
+	pessoa x = aux->info;
+
+	if (f->inicio == NULL)
+	{
+		f->fim = NULL;
+	}
+
 	free(aux);
-	return 1;
-	
+	return x;	
 }
 
-void imprimir(fila *fila){
-	
-	while (!vazia(fila)){
-		printf("%d ", fila->inicio->info);
-		desenfileirar(fila);
+
+
+void imprimir(fila *f){
+	celula *aux = f->inicio;
+
+	while (aux != NULL)
+	{
+		printf("%d\n", aux->info.idade);
+		printf("%d\n", aux->info.altura);
+		aux = aux->next;
 	}
 }
+
+void imprimirC(fila *f){
+	while(!vazia(f)){
+		printf("%d\n", f->inicio->info.idade);
+		printf("%d\n", f->inicio->info.altura);
+		desenfileirar(f);
+	}
+}
+
 
 int main(){
+
+	fila f;
+	inicializar(&f);
+
+	pessoa p1;
+	p1.idade = 10;
+	p1.altura = 170;
+
+	pessoa p2;
+	p2.idade = 90;
+	p2.altura = 140;
+
+	enfileirar(&f, p1);
+	enfileirar(&f, p2);
+
+	imprimirC(&f);
+
 	
-	fila ptrfila;
-	inicializar(&ptrfila);
-	
-	enfileirar(&ptrfila, 6);
-	enfileirar(&ptrfila, 12);
-	imprimir(&ptrfila);
-	
-	return 0;
 }
