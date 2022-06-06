@@ -3,168 +3,268 @@
 
 typedef struct sCell{
 	int info;
-	struct sCell *dir;
-	struct sCell *esq;
+	struct sCell *dir, *esq;
 }celula;
 
-typedef struct sArv{
-	celula *raiz;	
-}arvore;
-
-void inicializar (celula *raiz){
-	raiz = NULL;
+void inicializar(celula **ptrRaiz){
+	*ptrRaiz = NULL;
 }
 
-celula *criarCelula(){
+celula *criarNo(){
 	return (celula*)malloc(sizeof(celula));
-	
 }
 
-int vazia(celula *raiz){
-	if (raiz == NULL)
+int vazia(celula **no){
+	if (*no == NULL)
 		return 1;
-	return 0;	
+	return 0;
 }
 
-void visita(celula *raiz){
-	printf("%d \n", raiz->info);	
-}
 
-void preordem (celula *raiz){
-	
-	if(!vazia(raiz))
-		visita(raiz);
-		preordem(raiz->esq);
-		preordem(raiz->dir);
-}
-
-void ordem(celula *raiz){
-	
-	if(!vazia(raiz)){
-		ordem(raiz->esq);
-		visita(raiz);
-		ordem(raiz->dir);
+int inserir(celula **ptrRaiz, int elemento){
+	if (*ptrRaiz == NULL){
+		celula *novoNo = criarNo();
+		novoNo->info = elemento;
+		novoNo->esq = NULL;
+		novoNo->dir = NULL;
+		*ptrRaiz = novoNo;
+		return 1;
 	}
+	
+	if(elemento > (*ptrRaiz)->info)
+		return inserir(&(*ptrRaiz)->dir, elemento);
+	return inserir(&(*ptrRaiz)->esq, elemento);
 }
 
-void posordem (celula *raiz){
+int inserirIterativa(celula **ptrRaiz, int elemento){
+	celula *aux = *ptrRaiz;
+	celula *ant = NULL;
 	
-	if(!vazia(raiz))
-		posordem(raiz->dir);
-		posordem(raiz->esq);
-		visita(raiz);
-}
-
-void inserir(celula *raiz, int elemento){
+	celula *novoNo = criarNo();
+	novoNo->info = elemento;
+	novoNo->esq = NULL;
+	novoNo->dir = NULL;
 	
-	if (raiz == NULL)
-	{
-		system("pause");
-		celula *no = criarCelula();
-		no->info = elemento;
-	
-		raiz = no;
-		no->esq = NULL;
-		no->dir = NULL;
-	}else
-	{
-		if (elemento < raiz->info)	
-			inserir(raiz->esq, elemento);
-		else
-		inserir(raiz->dir, elemento);
+	if(vazia(ptrRaiz)){
+		*ptrRaiz = novoNo;
+		return 1;
 	}
-		
-}
-
-celula *pesquisar(celula *raiz, int elemento){
 	
-	if (vazia(raiz))
-		return NULL;
-		
-	if (raiz->info == elemento)
-		return raiz;
-		
+	while(aux != NULL){
+		ant = aux;
+		if(elemento > aux->info)
+			aux = aux->dir;
+		else 
+			aux = aux->esq;
+	}
+	
+	if(elemento > ant->info)
+		ant->dir = novoNo;
 	else 
-	{
-		if(raiz->info < elemento)
-			pesquisar(raiz->esq, elemento);
-		else
-			pesquisar(raiz->dir, elemento);	
-	}
-}
-
-celula *maiorElemento(celula *raiz){
-	if (raiz->dir != NULL)
-		maiorElemento(raiz->dir);
-	else
-	{
-		celula *aux = raiz;
-		if (raiz->esq != NULL)
-			raiz = raiz->esq;
-		else
-			raiz = NULL;	
-		return aux;	
-	}	
-}
-
-void remover(celula *raiz, int elemento){
+		ant->esq = novoNo;
 	
-	if (vazia(raiz))
-		printf("arvore vazia"); return;
+	return 1;
+}
+
+void imprimir(celula **no){
+	printf("%d ", (*no)->info);
+}
+
+void emOrdem(celula **ptrRaiz){
+	if (*ptrRaiz != NULL){
+		emOrdem(&(*ptrRaiz)->esq);
+		imprimir(ptrRaiz);
+		emOrdem(&(*ptrRaiz)->dir);
+	}
+	
+}
+
+int contaNo(celula **ptrRaiz){
+	if(*ptrRaiz == NULL)
+		return 0;
+	
+	return 1 + contaNo(&(*ptrRaiz)->esq) + contaNo(&(*ptrRaiz)->dir);
+}
+
+int altura(celula **ptrRaiz){
+	if(*ptrRaiz == NULL)
+		return 0;
+	
+	int altE = altura(&(*ptrRaiz)->esq);
+	int altD = altura(&(*ptrRaiz)->dir);
+	if(altE > altD)
+		return 1+ altE;
+	else 
+		return 1+ altD;
+}
+
+int contaFolha(celula **ptrRaiz){
+	if ((*ptrRaiz)-> dir == NULL && (*ptrRaiz)-> esq == NULL)
+		return 1;
+	return contaFolha(&(*ptrRaiz)->esq) + contaFolha(&(*ptrRaiz)->dir);
+}
+
+celula* pesquisar(celula **ptrRaiz, int elemento){
+	if (vazia(&(*ptrRaiz)))
+		return NULL;
+	
+	if ((*ptrRaiz)->info == elemento)
+		return *ptrRaiz;
+	if (elemento > (*ptrRaiz)->info)
+		return pesquisar(&(*ptrRaiz)->dir, elemento);
+	else 
+		return pesquisar(&(*ptrRaiz)->esq, elemento);
+}
+
+celula *maiorElemento(celula **ptrRaiz){
+	if((*ptrRaiz)->dir != NULL)
+		maiorElemento(&(*ptrRaiz)->dir);
+	
+	celula *aux = (*ptrRaiz);
+	if((*ptrRaiz)->esq != NULL)
+		(*ptrRaiz) = (*ptrRaiz)->esq;
+	else 
+		(*ptrRaiz) = NULL;
+	
+	return aux;
+}
+
+int removerIterativo(celula **ptrRaiz, int elemento){
+	
+	if (vazia(&(*ptrRaiz)))
+		return 1;
+	
+	celula *rem = (*ptrRaiz);
+	celula *remPai = NULL;
+	
+	while(rem->info != elemento){
+		remPai = rem;
+		if(elemento > rem->info)
+			rem = rem->dir;
+		else 
+			rem = rem->esq;
+	}
+	
+	if(rem->esq == NULL && rem->dir == NULL){
+		if((remPai->esq) == rem)
+			remPai->esq = NULL;
+		else 
+			remPai->dir = NULL;
+ 		free(rem);
+	}
+	else{
+		if(rem->esq == NULL){
+			if((remPai->esq) == rem)
+				remPai->esq = rem->dir;
+			else 
+				remPai->dir = rem->dir;
+			
+			free(rem);
+		}
+		if(rem->dir == NULL){
+			if((remPai->esq) == rem)
+				remPai->esq = rem->esq;
+			else 
+				remPai->dir = rem->esq;
+			
+			free(rem);
+		}
+		else
+		{
+			celula *aux = maiorElemento(&rem->esq);
+			rem->info = aux->info;
+			free(aux);
+		}
+		
+	}
+	
+	return 1;
+}
+
+int remover(celula **ptrRaiz, int elemento){
+	if (vazia(&(*ptrRaiz)))
+		return 1;
 	
 	//ACHANDO O ELEMENTO
-	if(raiz->info < elemento)
-		remover(raiz->esq, elemento);
-	else if (raiz->info > elemento)
-		remover(raiz->dir, elemento);
+	if(elemento > (*ptrRaiz)->info)
+		remover(&(*ptrRaiz)->dir, elemento);
+	else if (elemento < (*ptrRaiz)->info)
+		remover(&(*ptrRaiz)->esq, elemento);
 	
-	//ELEMENTO ACHADO 
-	else 
+	//ELEMENTO ACHADO
+	else
 	{
-		celula *aux = raiz;
-		if (raiz->esq == NULL && raiz->dir == NULL) //VERIFICANDO SE O ELEMENTO É FOLHA - CASO 1
-		{
-			free(aux);
-			raiz = NULL;
-		}
+		celula *aux = (*ptrRaiz);
 		
-		else 										// VERIFICANDO SE O ELEMENTO SÓ TEM 1 SUBARVORE - CASO 2
+		//CASO 1 - ELEMENTO ï¿½ FOLHA
+		if((*ptrRaiz)->esq == NULL && (*ptrRaiz)->dir == NULL)
+			(*ptrRaiz) = NULL;
+		
+		else
 		{
-			if (raiz->esq == NULL)						
-			{
-				raiz = raiz->dir;
-				free(aux);	
-			}
-			if (raiz->dir == NULL)
-			{
-				raiz = raiz->esq;
-				free(aux);	
-			}
-			
+			//CASO 2 - Sï¿½ TEM UMA SUBARVROE
+			if((*ptrRaiz)->esq == NULL)
+				(*ptrRaiz) = (*ptrRaiz)->dir;
+
+			if((*ptrRaiz)->dir == NULL)
+				(*ptrRaiz) = (*ptrRaiz)->esq;
+
+			//CASO 3 - TEM DUAS SUBARVORES
 			else
 			{
-				aux = maiorElemento(raiz->esq);
-				aux->esq = raiz->esq;
-				aux->dir = raiz->dir;
-				free(raiz);
-				raiz = aux;
+				aux = maiorElemento(&(*ptrRaiz)->esq);
+				(*ptrRaiz)->info = aux->info;
 			}
 		}
-	}	
+		
+		free(aux);
+	}
+	
+	return 1;
 }
 
+celula *maiorElementoIter(celula **ptrRaiz){
+	celula *aux = (*ptrRaiz);
+	celula *pai = NULL;
+	
+	while(aux->dir != NULL){
+		pai = aux;                   
+		aux = aux->dir;
+	}
+	
+	if(aux->esq != NULL)
+		pai->dir = aux->esq;
+	else
+		pai->dir = NULL;
+	
+	return aux;
+}
 
 
 int main(){
 	
-	arvore arv;
-	inicializar(arv.raiz);
+	celula *ptrRaiz;
+	inicializar(&ptrRaiz);
 	
-	inserir(arv.raiz, 8);
-	inserir(arv.raiz, 0);
-	inserir(arv.raiz, 87);
+	inserir(&ptrRaiz, 10);
+	inserir(&ptrRaiz, 5);
+	inserir(&ptrRaiz, 4);
+	inserir(&ptrRaiz, 7);
+	inserir(&ptrRaiz, 15);
+	inserir(&ptrRaiz, 14);
+	inserir(&ptrRaiz, 16);
+
+	removerIterativo(&ptrRaiz, 5);
+	emOrdem(&ptrRaiz);
+	printf("\n");
+	remover(&ptrRaiz, 10);
+	emOrdem(&ptrRaiz);
 	
-	ordem(arv.raiz);
+	
+	
+	printf("\nnos - %d",contaNo(&ptrRaiz));
+	printf("\naltura - %d",altura(&ptrRaiz));
+	printf("\nfolhas - %d",contaFolha(&ptrRaiz));
 	
 	return 0;
 }
